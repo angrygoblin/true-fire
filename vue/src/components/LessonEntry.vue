@@ -1,6 +1,6 @@
 <template>
     <li>
-        <a href="#" @click.prevent="test">
+        <a href="#" @click.prevent="">
             <div class="d-flex">
                 <div class="flex-grow-1 overflow-hidden">
                     <h5 class="text-truncate font-size-15 mb-1">{{title}}</h5>
@@ -19,14 +19,7 @@
 <script>
 export default {
     props: ['duration', 'title', 'subtitle'],
-    methods: {
-        test() {
-            console.log(window.electronAPI.readDir('app/lessons'))
-            const rawInfo = window.electronAPI.readFile('app/lessons/16/info.json', 'utf8')
-            console.log(rawInfo)
-            console.log(JSON.parse(rawInfo))
-        }
-    }
+    methods: {}
 }
 </script>
 <style>

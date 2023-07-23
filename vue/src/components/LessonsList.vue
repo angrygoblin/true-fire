@@ -4,47 +4,18 @@ import LessonEntry from "@/components/LessonEntry.vue";
 export default {
     components: {LessonEntry},
     data: () => ({
-        lessons: []
+        title: '',
+        lessons: [],
     }),
-    mounted() {
-        this.lessons = this.readCourse()
+    async mounted() {
+        await this.openCourse(5)
     },
     methods: {
-        readCourse() {
-            const courseDir = 'app/lessons/Play Jazz Guitar 2 Rhythm & Lead Fundamentals';
-            const lessonsDirsList = window.electronAPI.readDir(courseDir);
-            const lessons = [];
-            for (const lessonDir of lessonsDirsList) {
-                if (!window.electronAPI.isDir(courseDir + '/' + lessonDir)) {
-                    continue;
-                }
-                const info = window.electronAPI.readFile(courseDir + '/' + lessonDir + '/info.json', 'utf8')
-                const lessonTitleParts = /^([\d]+) - (.*)$/.exec(lessonDir)
-                const lesson = {
-                    number: +lessonTitleParts[1],
-                    title: lessonTitleParts[2],
-                    ...JSON.parse(info),
-                    video: [],
-                    chart: [],
-                    tabs: []
-                }
-                const lessonFiles = window.electronAPI.readDir(courseDir + '/' + lessonDir);
-                for(const lessonFile of lessonFiles) {
-                    if(lessonFile.includes('lesson')) {
-                        lesson.video.push(lessonFile);
-                    }
-                    if(lessonFile.includes('tabs')) {
-                        lesson.tabs = lessonFile;
-                    }
-                    if(lessonFile.includes('chart')) {
-                        lesson.chart = lessonFile;
-                    }
-                }
-                lessons.push(lesson)
-            }
-            lessons.sort((a, b) => a.number - b.number)
-            return lessons;
-        }
+        async openCourse(courseId) {
+            const lessonData = await window.electronAPI.getCourse(courseId);
+            this.lessons = lessonData.lessons;
+            this.title = lessonData.title;
+        },
     }
 }
 </script>
@@ -59,12 +30,19 @@ export default {
                         <div class="progress mb-4">
                             <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
                         </div>
-                        <h4 class="mb-4 mt-4">Rhythm & Lead Fundamentals</h4>
+                        <h4 class="mb-4 mt-4">{{this.title}}</h4>
                     </div>
                     <div class="">
                         <div class="chat-message-list px-2" data-simplebar>
                             <ul class="list-unstyled chat-list chat-user-list">
-                                <lesson-entry :title="lesson.title" :subtitle="lesson.subTitle" duration="" v-for="(lesson, key) in lessons" :key="`lesson-${key}`"/>
+                                <lesson-entry
+                                    :title="lesson.title"
+                                    :subtitle="lesson.subtitle"
+                                    duration=""
+                                    v-for="(lesson, key) in lessons"
+                                    :key="`lesson-${key}`"
+                                    @click="$emit('open-lesson', lesson)"
+                                />
                             </ul>
                         </div>
                     </div>

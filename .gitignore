@@ -2,6 +2,7 @@
 node_modules
 /dist
 electron/app
+electron/lessons
 electron/node_modules
 vue/public/lessons
 vue/node_modules

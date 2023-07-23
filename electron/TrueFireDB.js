@@ -1,24 +1,25 @@
 const sqlite3 = require('sqlite3').verbose();
 
 class TrueFireDB {
-    static #instance = null;
-    static #db = null;
+    static _instance = null;
+    static _db = null;
     constructor(db) {
-        if (TrueFireDB.#instance) {
+        if (TrueFireDB._instance) {
             throw new Error('The constructor should not be called directly');
         }
-        TrueFireDB.#db = new sqlite3.Database(db);
+        TrueFireDB._db = new sqlite3.Database(db);
+        console.log('init', TrueFireDB._db)
     }
 
     static instance() {
-        if (!TrueFireDB.#instance) {
-            TrueFireDB.#instance = new TrueFireDB('truefire.db');
+        if (!TrueFireDB._instance) {
+            TrueFireDB._instance = new TrueFireDB('truefire.db');
         }
-        return TrueFireDB.#instance
+        return TrueFireDB._instance
     }
 
     db() {
-        return TrueFireDB.#db
+        return TrueFireDB._db
     }
 }
 

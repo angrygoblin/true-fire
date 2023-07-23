@@ -3,6 +3,7 @@ const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const url = require("url");
 const path = require("path");
 const fs = require('fs');
+const LibraryImporter = require("./LibraryImporter");
 const Library = require("./Library");
 
 let mainWindow
@@ -47,8 +48,20 @@ function createMenu() {
                 {
                     label: 'Update',
                     click: async () => {
-                        const lib = new Library('app/lessons');
-                        lib.scan();
+                        const lib = new LibraryImporter('lessons');
+                        await lib.importCourses();
+                    }
+                },
+            ]
+        },
+        {
+            label: 'Courses',
+            submenu: [
+                {
+                    label: 'Lesson 2',
+                    click: async () => {
+                        const lib = new Library('lessons');
+                        console.log(lib.getCourse(5))
                     }
                 },
             ]
