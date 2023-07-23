@@ -1,27 +1,19 @@
 <script>
 import LessonEntry from "@/components/LessonEntry.vue";
+import 'perfect-scrollbar/css/perfect-scrollbar.css';
+import PerfectScrollbar from "perfect-scrollbar";
 
 export default {
     components: {LessonEntry},
-    data: () => ({
-        title: '',
-        lessons: [],
-    }),
-    async mounted() {
-        await this.openCourse(5)
-    },
-    methods: {
-        async openCourse(courseId) {
-            const lessonData = await window.electronAPI.getCourse(courseId);
-            this.lessons = lessonData.lessons;
-            this.title = lessonData.title;
-        },
+    props: ['title', 'lessons'],
+    mounted() {
+        new PerfectScrollbar(this.$refs.lessonList);
     }
 }
 </script>
 
 <template>
-    <div class="chat-leftsidebar me-lg-1 ms-lg-0">
+    <div class="chat-leftsidebar me-lg-1 ms-lg-0 lessons-list" ref="lessonList">
         <div class="tab-content">
             <div class="tab-pane fade show active" id="pills-chat" role="tabpanel" aria-labelledby="pills-chat-tab">
                 <!-- Start chats content -->
@@ -38,7 +30,7 @@ export default {
                                 <lesson-entry
                                     :title="lesson.title"
                                     :subtitle="lesson.subtitle"
-                                    duration=""
+                                    :duration="lesson.duration"
                                     v-for="(lesson, key) in lessons"
                                     :key="`lesson-${key}`"
                                     @click="$emit('open-lesson', lesson)"
@@ -52,9 +44,12 @@ export default {
     </div>
 </template>
 
-<style scoped>
+<style>
 .chat-leftsidebar {
+    position: relative;
     min-width: 380px;
+    height: 100vh;
+    overflow: hidden;
 }
 .chat-list {
     margin: 0;

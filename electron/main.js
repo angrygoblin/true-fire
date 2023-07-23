@@ -52,6 +52,13 @@ function createMenu() {
                         await lib.importCourses();
                     }
                 },
+                {
+                    label: 'get length',
+                    click: async () => {
+                        const lib = new LibraryImporter('lessons');
+                        await lib.updateLengths();
+                    }
+                },
             ]
         },
         {

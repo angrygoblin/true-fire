@@ -1,6 +1,6 @@
 <template>
     <div class="layout-wrapper d-lg-flex">
-        <lessons-list @open-lesson="openLesson"/>
+        <lessons-list @open-lesson="openLesson" :title="course.title" :lessons="course.lessons"/>
         <div class="user-chat w-100 overflow-hidden">
             <div class="d-lg-flex">
                 <div class="w-100 overflow-hidden position-relative">
@@ -31,7 +31,7 @@
                         </div>
                     </div>
                     <div class="chat-conversation" data-simplebar="init">
-                        <video :src="`../${lesson.assets.video}`" type='video/mp4' controls></video>
+                        <video :src="`../${lesson.assets.video}`" type='video/mp4' :poster="`../${course.poster}`" controls></video>
                     </div>
                     <div class="p-3 p-lg-4">
                         {{lesson.overview}}
@@ -43,11 +43,15 @@
 </template>
 
 <script>
-import LessonsList from "@/components/LessonsList.vue";
+import LessonsList from '@/components/LessonsList.vue';
 
 export default {
     components: {LessonsList},
     data: () => ({
+        course: {
+            title: '',
+            lessons: []
+        },
         lesson: {
             title: '',
             subtitle: '',
@@ -59,12 +63,16 @@ export default {
             },
         },
     }),
-    created() {
+    async mounted() {
+        await this.openCourse(5);
     },
     methods: {
         openLesson(lesson) {
             this.lesson = lesson
-        }
+        },
+        async openCourse(lessonId) {
+            this.course = await window.electronAPI.getCourse(lessonId);
+        },
     }
 }
 </script>

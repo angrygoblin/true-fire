@@ -6,7 +6,7 @@
                     <h5 class="text-truncate font-size-15 mb-1">{{title}}</h5>
                     <p class="chat-user-message text-truncate mb-0">{{subtitle}}</p>
                 </div>
-                <div class="font-size-11">04:26</div>
+                <div class="font-size-11">{{durationFormatted}}</div>
                 <div class="unread-message">
                     <span class="badge badge-soft-success rounded-pill">
                         <i class="fa-solid fa-check"></i>
@@ -19,6 +19,16 @@
 <script>
 export default {
     props: ['duration', 'title', 'subtitle'],
+    computed: {
+        durationFormatted() {
+            let min = Math.floor(this.duration/60);
+            let sec = this.duration%60;
+            if (sec < 9) {
+                sec = `0` + sec;
+            }
+            return `${min}:${sec}`;
+        }
+    },
     methods: {}
 }
 </script>

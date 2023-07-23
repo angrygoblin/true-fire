@@ -156,6 +156,22 @@ class LibraryImporter {
             })
         })
     }
+
+
+    /**************************/
+    updateLengths() {
+        this.#db.all('SELECT * FROM content WHERE type = ?', [this.AssetsTypes.video], (err, rows) => {
+            for (let row of rows) {
+                console.log(row)
+                let command = `ffprobe -v error -select_streams v:0 -show_entries stream=duration -of default=noprint_wrappers=1:nokey=1 "${row.file}"`
+                exec(command, (error, stdout, stderr) => {
+                    const duration = Math.floor(stdout);
+                    this.#db.run('UPDATE lessons SET duration = ? WHERE id = ?', [duration, row.lesson_id])
+                });
+            }
+        })
+    }
+    /**************************/
 }
 
 module.exports = LibraryImporter
