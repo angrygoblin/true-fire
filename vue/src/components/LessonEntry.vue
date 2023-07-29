@@ -1,5 +1,5 @@
 <template>
-    <li>
+    <li :class="['lesson', {active}]">
         <a href="#" @click.prevent="">
             <div class="d-flex">
                 <div class="flex-grow-1 overflow-hidden">
@@ -8,8 +8,14 @@
                 </div>
                 <div class="font-size-11">{{durationFormatted}}</div>
                 <div class="unread-message">
-                    <span class="badge badge-soft-success rounded-pill">
-                        <i class="fa-solid fa-check"></i>
+                    <span v-if="state === 2" class="finished">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </span>
+                    <span v-else-if="state === 1" class="playing">
+                        <i class="fa-regular fa-circle-check"></i>
+                    </span>
+                    <span v-else>
+                        <i class="fa-regular fa-circle"></i>
                     </span>
                 </div>
             </div>
@@ -18,7 +24,8 @@
 </template>
 <script>
 export default {
-    props: ['duration', 'title', 'subtitle'],
+    components: {},
+    props: ['duration', 'title', 'subtitle', 'active', 'state'],
     computed: {
         durationFormatted() {
             let min = Math.floor(this.duration/60);
@@ -28,8 +35,7 @@ export default {
             }
             return `${min}:${sec}`;
         }
-    },
-    methods: {}
+    }
 }
 </script>
 <style>
@@ -60,5 +66,11 @@ export default {
     height: 22px;
     text-align: center;
     line-height: 20px;
+}
+.chat-list li .unread-message span.finished {
+    color: #06d6a0;
+}
+.chat-list li .unread-message span.playing {
+    color: #ffd300;
 }
 </style>

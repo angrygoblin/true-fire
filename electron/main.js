@@ -1,10 +1,11 @@
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 
 const url = require("url");
 const path = require("path");
 const fs = require('fs');
 const LibraryImporter = require("./LibraryImporter");
 const Library = require("./Library");
+const TrueFireMenu = require('./TrueFireMenu');
 
 let mainWindow
 
@@ -30,17 +31,23 @@ function createWindow() {
         mainWindow = null
     })
 
-    mainWindow.webContents.openDevTools()
+    mainWindow.setTitle('True Fire')
 
-    // ipcMain.on('set-title', (event, title) => {
-    //     const webContents = event.sender
-    //     const win = BrowserWindow.fromWebContents(webContents)
-    //     win.setTitle(title)
-    // })
-
+    // mainWindow.webContents.openDevTools()
 }
 
-function createMenu() {
+async function createMenu() {
+    const tfMenu = new TrueFireMenu();
+    const jazzPathRows = await tfMenu.jazz();
+    const jazzMenu = [];
+    for (const item of jazzPathRows) {
+        jazzMenu.push({
+            label: item.name,
+            click: () => {
+                mainWindow.webContents.send('open-course', item.id)
+            }
+        })
+    }
     const template = [
         {
             label: 'Library',
@@ -62,7 +69,7 @@ function createMenu() {
             ]
         },
         {
-            label: 'Courses',
+            label: 'Acoustic',
             submenu: [
                 {
                     label: 'Lesson 2',
@@ -71,6 +78,12 @@ function createMenu() {
                         console.log(lib.getCourse(5))
                     }
                 },
+            ]
+        },
+        {
+            label: 'Jazz',
+            submenu: [
+                ...jazzMenu
             ]
         },
     ];

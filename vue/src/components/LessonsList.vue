@@ -5,9 +5,19 @@ import PerfectScrollbar from "perfect-scrollbar";
 
 export default {
     components: {LessonEntry},
-    props: ['title', 'lessons'],
+    props: ['title', 'lessons', 'progress'],
+    data: () => ({
+        active: null,
+    }),
     mounted() {
         new PerfectScrollbar(this.$refs.lessonList);
+    },
+    methods: {
+        activateLesson(lesson) {
+            console.log(lesson)
+            this.active = lesson.id
+            this.$emit('open-lesson', lesson);
+        }
     }
 }
 </script>
@@ -20,7 +30,7 @@ export default {
                 <div>
                     <div class="px-4 pt-4">
                         <div class="progress mb-4">
-                            <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                            <div class="progress-bar" role="progressbar" :style="{width: `${progress}%`}" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100">{{progress}}%</div>
                         </div>
                         <h4 class="mb-4 mt-4">{{this.title}}</h4>
                     </div>
@@ -28,12 +38,15 @@ export default {
                         <div class="chat-message-list px-2" data-simplebar>
                             <ul class="list-unstyled chat-list chat-user-list">
                                 <lesson-entry
+                                    :id="lesson.id"
+                                    :state="lesson.status"
                                     :title="lesson.title"
                                     :subtitle="lesson.subtitle"
                                     :duration="lesson.duration"
                                     v-for="(lesson, key) in lessons"
                                     :key="`lesson-${key}`"
-                                    @click="$emit('open-lesson', lesson)"
+                                    @click="activateLesson(lesson)"
+                                    :active="active === lesson.id"
                                 />
                             </ul>
                         </div>
@@ -63,5 +76,14 @@ export default {
     transition: all .4s;
     border-top: 1px solid var(--bs-sidebar-sub-bg);
     border-radius: 4px;
+}
+.lesson.active {
+    background: #262e35;
+    border-radius: 5px;
+}
+.progress-bar {
+    background-color: #06d6a0;
+    color: #262e35;
+    font-weight: bold;
 }
 </style>

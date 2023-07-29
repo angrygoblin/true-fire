@@ -13,6 +13,7 @@
     "electron": "^25.3.0"
   },
   "dependencies": {
+    "open": "^9.1.0",
     "sqlite3": "^5.1.6"
   }
 }
