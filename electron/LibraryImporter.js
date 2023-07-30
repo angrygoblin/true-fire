@@ -33,8 +33,9 @@ class LibraryImporter {
         if (!courseId) {
             console.log('create course: ' + courseDir);
             courseId = await this.createCourse(courseDir, coursePath + '/poster.jpg')
-            this.addSupplementary(courseId, courseInfo.parent);
-            this.addCourseToLearningPath(courseInfo.path, courseInfo.number, courseId)
+            if (courseInfo.category) {
+                this.addCourseToCategory(courseInfo.category, courseInfo.number, courseId)
+            }
         }
         const lessonsDirsList = fs.readdirSync(coursePath);
         for (const lessonDir of lessonsDirsList) {
@@ -43,12 +44,16 @@ class LibraryImporter {
                 continue;
             }
             const lessonInfo = this.readInfoFile(lessonPath + '/info.json');
-            const row = await this.findLesson(courseId, lessonInfo.title)
+            if (lessonInfo.id) {
+                lessonInfo.subTitle = lessonInfo.subtitle
+            }
+            const row = await this.findLesson(courseId, lessonInfo.title, lessonInfo.subTitle)
             if(row) {
                 continue;
             }
             const lessonId = await this.importLesson(lessonPath, courseId)
             await this.importLessonAssets(lessonId, lessonPath)
+            await this.updateLengths(lessonId)
         }
     }
 
@@ -56,6 +61,9 @@ class LibraryImporter {
         console.log('create lesson: ' + lessonDir + ' course = ' + courseId);
         const lessonInfo = this.readInfoFile(lessonDir + '/info.json');
         const dirNameParts = /^([\d]+) - (.*)$/.exec(lessonDir.substring(lessonDir.lastIndexOf('/') + 1))
+        if (lessonInfo.id) {
+            lessonInfo.subTitle = lessonInfo.subtitle
+        }
         return this.createLesson(+dirNameParts[1], lessonInfo.title, lessonInfo.subTitle, lessonInfo.overview, courseId)
     }
 
@@ -67,11 +75,14 @@ class LibraryImporter {
                 await this.convertLessonVideo(lessonDir + '/' + lessonFile, lessonDir + '/tutorial.mp4')
                 this.createLessonAsset(lessonId, this.AssetsTypes.video, lessonDir + '/tutorial.mp4')
             }
+            if(lessonFile.includes('tutorial')) {
+                this.createLessonAsset(lessonId, this.AssetsTypes.video, lessonDir + '/tutorial.mp4')
+            }
             if(lessonFile.includes('tabs') || /\.(gp[345]+|ptb)$/.test(lessonFile)) {
-                await this.createLessonAsset(lessonId, this.AssetsTypes.tab, lessonDir + lessonFile)
+                await this.createLessonAsset(lessonId, this.AssetsTypes.tab, lessonDir + '/' + lessonFile)
             }
             if(lessonFile.includes('chart') || /\.pdf$/.test(lessonFile)) {
-                await this.createLessonAsset(lessonId, this.AssetsTypes.chart, lessonDir + lessonFile)
+                await this.createLessonAsset(lessonId, this.AssetsTypes.chart, lessonDir + '/' + lessonFile)
             }
         }
     }
@@ -88,9 +99,19 @@ class LibraryImporter {
         this.#db.run('INSERT INTO content (lesson_id, type, file) VALUES (?, ?, ?)', [lessonId, type, file])
     }
 
-    addCourseToLearningPath(path, number, courseId) {
-        const pathId = (path === 'Jazz' ? 1 : 2);
-        this.#db.run('INSERT INTO paths_courses (path_id, `index`, course_id) VALUES (?, ?, ?)', [pathId, number, courseId])
+    addCourseToCategory(category, number, courseId) {
+        switch(category) {
+            case 'Jazz':
+                category = 1;
+                break;
+            case 'Acoustic':
+                category = 2;
+                break;
+            case 'Supplementary':
+                category = 3;
+                break;
+        }
+        this.#db.run('INSERT INTO categories_courses (category_id, `index`, course_id) VALUES (?, ?, ?)', [category, number, courseId])
     }
 
     createCourse(name, poster) {
@@ -100,13 +121,6 @@ class LibraryImporter {
                 resolve(row.id)
             })
         })
-    }
-
-    addSupplementary(courseId, parent) {
-        if (parent === 0) {
-            return;
-        }
-        this.#db.run('INSERT INTO supplementary (course_id, parent_id) VALUES (?, ?)', [courseId, parent])
     }
 
     convertLessonVideo(from, to) {
@@ -149,20 +163,18 @@ class LibraryImporter {
         })
     }
 
-    findLesson(courseId, title) {
+    findLesson(courseId, title, subtitle) {
         return new Promise((resolve) => {
-            this.#db.get('SELECT * FROM lessons WHERE course_id = ? AND title = ? LIMIT 1', [courseId, title], (err, row) => {
+            console.log(`SELECT * FROM lessons WHERE course_id = ${courseId} AND title = '${title}' AND subtitle = '${subtitle}' LIMIT 1`)
+            this.#db.get('SELECT * FROM lessons WHERE course_id = ? AND title = ? AND subtitle = ? LIMIT 1', [courseId, title, subtitle], (err, row) => {
                 resolve(row)
             })
         })
     }
 
-
-    /**************************/
-    updateLengths() {
-        this.#db.all('SELECT * FROM content WHERE type = ?', [this.AssetsTypes.video], (err, rows) => {
+    updateLengths(lessonId) {
+        this.#db.all('SELECT * FROM content WHERE type = ? AND lesson_id = ?', [this.AssetsTypes.video, lessonId], (err, rows) => {
             for (let row of rows) {
-                console.log(row)
                 let command = `ffprobe -v error -select_streams v:0 -show_entries stream=duration -of default=noprint_wrappers=1:nokey=1 "${row.file}"`
                 exec(command, (error, stdout, stderr) => {
                     const duration = Math.floor(stdout);
@@ -171,7 +183,6 @@ class LibraryImporter {
             }
         })
     }
-    /**************************/
 }
 
 module.exports = LibraryImporter

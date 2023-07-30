@@ -7,16 +7,12 @@ class TrueFireMenu {
         this.db = TrueFireDB.instance().db();
     }
 
-    jazz() {
+    category(id) {
         return new Promise((resolve) => {
-            TrueFireDB.instance().db().all('SELECT * FROM courses LEFT JOIN paths_courses ON course_id = courses.id WHERE path_id = 1 ORDER BY `index`', (err, rows) => {
+            TrueFireDB.instance().db().all('SELECT * FROM courses LEFT JOIN categories_courses ON course_id = courses.id WHERE category_id = ? ORDER BY `index`', [id], (err, rows) => {
                 resolve(rows);
             });
         })
-    }
-
-    acoustic() {
-        return [];
     }
 
 }

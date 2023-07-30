@@ -14,7 +14,6 @@ export default {
     },
     methods: {
         activateLesson(lesson) {
-            console.log(lesson)
             this.active = lesson.id
             this.$emit('open-lesson', lesson);
         }

@@ -38,10 +38,30 @@ function createWindow() {
 
 async function createMenu() {
     const tfMenu = new TrueFireMenu();
-    const jazzPathRows = await tfMenu.jazz();
+    const jazzCatRows = await tfMenu.category(1);
     const jazzMenu = [];
-    for (const item of jazzPathRows) {
+    for (const item of jazzCatRows) {
         jazzMenu.push({
+            label: item.name,
+            click: () => {
+                mainWindow.webContents.send('open-course', item.id)
+            }
+        })
+    }
+    const acousticCatRows = await tfMenu.category(2);
+    const acousticMenu = [];
+    for (const item of acousticCatRows) {
+        acousticMenu.push({
+            label: item.name,
+            click: () => {
+                mainWindow.webContents.send('open-course', item.id)
+            }
+        })
+    }
+    const supplementaryCatRows = await tfMenu.category(3);
+    const supplementaryMenu = [];
+    for (const item of supplementaryCatRows) {
+        supplementaryMenu.push({
             label: item.name,
             click: () => {
                 mainWindow.webContents.send('open-course', item.id)
@@ -59,31 +79,24 @@ async function createMenu() {
                         await lib.importCourses();
                     }
                 },
-                {
-                    label: 'get length',
-                    click: async () => {
-                        const lib = new LibraryImporter('lessons');
-                        await lib.updateLengths();
-                    }
-                },
             ]
         },
         {
             label: 'Acoustic',
             submenu: [
-                {
-                    label: 'Lesson 2',
-                    click: async () => {
-                        const lib = new Library('lessons');
-                        console.log(lib.getCourse(5))
-                    }
-                },
+                ...acousticMenu
             ]
         },
         {
             label: 'Jazz',
             submenu: [
                 ...jazzMenu
+            ]
+        },
+        {
+            label: 'Supplementary',
+            submenu: [
+                ...supplementaryMenu
             ]
         },
     ];
