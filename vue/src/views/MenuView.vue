@@ -1,9 +1,7 @@
 <script>
 import PerfectScrollbar from "perfect-scrollbar";
-import TrueFireHeader from '@/components/TrueFireHeader.vue';
 
 export default {
-    components: {TrueFireHeader},
     props: ['title', 'lessons', 'progress'],
     data: () => ({
         jazz: [],
@@ -37,7 +35,6 @@ export default {
     <div class="layout-wrapper d-lg-flex menu-view">
         <div class="user-chat w-100 overflow-hidden" ref="lessonContent">
             <div class="d-lg-flex">
-                <true-fire-header/>
                 <div class="container">
                     <div class="row">
                         <img src="assets/images/truefire-logo.png"/>

@@ -22,7 +22,7 @@ export default {
 </script>
 
 <template>
-    <div class="chat-leftsidebar me-lg-1 ms-lg-0 lessons-list" ref="lessonList">
+    <div class="chat-leftsidebar me-lg-1 ms-lg-0 lessons-list">
         <div class="tab-content">
             <div class="tab-pane fade show active" id="pills-chat" role="tabpanel" aria-labelledby="pills-chat-tab">
                 <!-- Start chats content -->
@@ -34,7 +34,7 @@ export default {
                         <h4 class="mb-4 mt-4">{{this.title}}</h4>
                     </div>
                     <div class="">
-                        <div class="chat-message-list px-2" data-simplebar>
+                        <div class="chat-message-list px-2" data-simplebar  ref="lessonList">
                             <ul class="list-unstyled chat-list chat-user-list">
                                 <lesson-entry
                                     :id="lesson.id"
@@ -58,6 +58,12 @@ export default {
 
 <style>
 .chat-leftsidebar {
+    position: relative;
+    min-width: 380px;
+    height: 100vh;
+    overflow: hidden;
+}
+.chat-leftsidebar .chat-message-list{
     position: relative;
     min-width: 380px;
     height: 100vh;

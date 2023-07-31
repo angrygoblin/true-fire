@@ -3,7 +3,6 @@
         <lessons-list @open-lesson="openLesson" :title="course.title" :lessons="course.lessons" :progress="progress" v-if="isFinite(progress)"/>
         <div class="user-chat w-100 overflow-hidden" ref="lessonContent">
             <div class="d-lg-flex">
-                <true-fire-header/>
                 <div class="w-100 overflow-hidden position-relative" v-if="lesson">
                     <div class="p-3 p-lg-4 border-bottom user-chat-topbar">
                         <div class="row align-items-center">
@@ -57,7 +56,6 @@
 
 <script>
 import LessonsList from '@/components/LessonsList.vue';
-import TrueFireHeader from '@/components/TrueFireHeader.vue';
 import PerfectScrollbar from "perfect-scrollbar";
 import 'perfect-scrollbar/css/perfect-scrollbar.css';
 const LessonStatus = {
@@ -66,7 +64,7 @@ const LessonStatus = {
     finished: 2,
 }
 export default {
-    components: {LessonsList, TrueFireHeader},
+    components: {LessonsList},
     computed: {
         lesson () {
             for (const lesson of this.course.lessons) {

@@ -44,6 +44,7 @@ export default {
     top: 0;
     width: 100%;
     left: 0;
+    z-index: 999;
 }
 .close-button {
     display: block;
@@ -51,6 +52,7 @@ export default {
     top: 5px;
     right: 14px;
     font-size: 20px;
+    z-index: 999;
 }
 .menu-button {
     display: block;
@@ -58,5 +60,6 @@ export default {
     top: 18px;
     left: 24px;
     font-size: 20px;
+    z-index: 999;
 }
 </style>

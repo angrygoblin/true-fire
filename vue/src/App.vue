@@ -1,14 +1,15 @@
 <script>
 import { RouterView } from 'vue-router'
+import TrueFireHeader from "@/components/TrueFireHeader.vue";
 // const illustrations = require.context('@/lessons', true)
 // console.log(illustrations.keys())
 export default {
-    components: {RouterView},
-
+    components: {TrueFireHeader, RouterView},
 }
 </script>
 
 <template>
+    <true-fire-header/>
     <router-view/>
 </template>
 
