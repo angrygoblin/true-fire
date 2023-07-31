@@ -90,9 +90,6 @@ export default {
     }),
     async mounted() {
         await this.openCourse(+this.$route.query.course);
-        window.electronAPI.menuClick((event, id) => {
-            this.openCourse(id);
-        })
         new PerfectScrollbar(this.$refs.lessonContent);
     },
     methods: {
@@ -147,6 +144,8 @@ body {
 }
 .user-chat {
     height: 100vh;
+    overflow: hidden;
+    position: relative;
     background-color: var(--bs-white);
     -webkit-box-shadow: 0 2px 4px rgba(15,34,58,.12);
     box-shadow: 0 2px 4px rgba(15,34,58,.12);
