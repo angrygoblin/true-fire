@@ -12,7 +12,6 @@ class Library {
     }
 
     async updateProgress(id, status) {
-        console.log('update progress id: ' + id + ', status: ' + status)
         return new Promise((resolve) => {
             this.db.run('DELETE FROM progress WHERE lesson_id = ?', [id], (err, row) => {
                 this.db.run('INSERT INTO progress (lesson_id, status) VALUES (?, ?)', [id, status], (err, row) => {
@@ -31,7 +30,6 @@ class Library {
     }
 
     async getCourse(id) {
-        console.log('get course ' + id)
         const course = new Promise((resolve) => {
             this.db.get('SELECT * FROM courses WHERE id = ?', [id], (err, row) => {
                 resolve(row)
@@ -82,6 +80,25 @@ class Library {
             result.lessons.push(lesson)
         }
         return result;
+    }
+
+    getCategory(id) {
+        return new Promise((resolve) => {
+            TrueFireDB.instance().db().all(`
+                SELECT * FROM courses
+                LEFT JOIN categories_courses ON categories_courses.course_id = courses.id
+                LEFT JOIN (
+                SELECT course_id, count(*) as lessons, sum(progress.status)/2 as passed FROM lessons
+                LEFT JOIN progress ON progress.lesson_id = lessons.id
+                GROUP BY course_id
+                ) l
+                ON l.course_id = courses.id
+                WHERE category_id = ?
+                ORDER BY \`index\``,
+                [id], (err, rows) => {
+                resolve(rows);
+            });
+        })
     }
 
 }

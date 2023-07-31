@@ -27,6 +27,13 @@ export default {
         openCourse(id) {
             this.$router.push('/?course=' + id);
         },
+        getProgress(total, passed) {
+            const percent = (passed/total * 100).toFixed();
+            if (+percent === 0) {
+                return '';
+            }
+            return percent + '%';
+        }
     }
 }
 </script>
@@ -43,19 +50,19 @@ export default {
                         <div class="col">
                             <h3>Jazz</h3>
                             <ul>
-                                <li v-for="(item, key) in jazz" :key="`jazz-${key}`"><a href="#" @click="openCourse(item.id)">{{item.name}}</a></li>
+                                <li v-for="(item, key) in jazz" :key="`jazz-${key}`"><a href="#" @click="openCourse(item.id)">{{item.name}} <span>{{getProgress(item.lessons, item.passed)}}</span></a></li>
                             </ul>
                         </div>
                         <div class="col">
                             <h3>Acoustic</h3>
                             <ul>
-                                <li v-for="(item, key) in acoustic" :key="`jazz-${key}`"><a href="#" @click="openCourse(item.id)">{{item.name}}</a></li>
+                                <li v-for="(item, key) in acoustic" :key="`jazz-${key}`"><a href="#" @click="openCourse(item.id)">{{item.name}} <span>{{getProgress(item.lessons, item.passed)}}</span></a></li>
                             </ul>
                         </div>
                         <div class="col">
                             <h3>Supplementary</h3>
                             <ul>
-                                <li v-for="(item, key) in supplementary" :key="`jazz-${key}`"><a href="#" @click="openCourse(item.id)">{{item.name}}</a></li>
+                                <li v-for="(item, key) in supplementary" :key="`jazz-${key}`"><a href="#" @click="openCourse(item.id)">{{item.name}} <span>{{getProgress(item.lessons, item.passed)}}</span></a></li>
                             </ul>
                         </div>
                     </div>
@@ -98,6 +105,9 @@ export default {
 }
 .menu-view ul li a{
     color: rgba(255, 255, 255, 0.5);
+}
+.menu-view ul li a span{
+    color: white;
 }
 .menu-view ul li:hover a{
     color: white;

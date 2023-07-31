@@ -2,7 +2,6 @@ const { contextBridge, ipcRenderer, shell, app} = require('electron')
 const fs = require('fs');
 const Library = require("./Library");
 const path = require("path");
-const TrueFireMenu = require("./TrueFireMenu");
 
 contextBridge.exposeInMainWorld('electronAPI', {
     getCourse: async (id) => {
@@ -24,7 +23,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
         ipcRenderer.send('close-app')
     },
     getCategory: async (id) => {
-        const menu = new TrueFireMenu();
-        return menu.category(id)
+        const menu = new Library();
+        return menu.getCategory(id)
     },
 })
