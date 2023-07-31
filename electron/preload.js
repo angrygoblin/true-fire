@@ -1,13 +1,10 @@
-const { contextBridge, ipcRenderer, shell} = require('electron')
+const { contextBridge, ipcRenderer, shell, app} = require('electron')
 const fs = require('fs');
 const Library = require("./Library");
 const path = require("path");
+const TrueFireMenu = require("./TrueFireMenu");
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    setTitle: (title) => {
-        console.log('preload')
-        return ipcRenderer.send('set-title', title)
-    },
     getCourse: async (id) => {
         const lib = new Library();
         return lib.getCourse(id)
@@ -21,8 +18,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
         return lib.updateProgress(id, status)
     },
     openFile: async (file) => {
-        console.log(file)
         await shell.openPath(path.join(__dirname, file));
     },
-    menuClick: (callback) => ipcRenderer.on('open-course', callback)
+    closeApp: () => {
+        ipcRenderer.send('close-app')
+    },
+    getCategory: async (id) => {
+        const menu = new TrueFireMenu();
+        return menu.category(id)
+    },
 })

@@ -27,7 +27,7 @@ export default {
             <div class="tab-pane fade show active" id="pills-chat" role="tabpanel" aria-labelledby="pills-chat-tab">
                 <!-- Start chats content -->
                 <div>
-                    <div class="px-4 pt-4">
+                    <div class="px-4 pt-4" style="margin-left: 40px">
                         <div class="progress mb-4">
                             <div class="progress-bar" role="progressbar" :style="{width: `${progress}%`}" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100">{{progress}}%</div>
                         </div>

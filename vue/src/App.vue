@@ -13,6 +13,9 @@ export default {
 </template>
 
 <style>
+body {
+    -webkit-user-select: none;
+}
 @import url(https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600&display=swap);
 :root {
     --bs-body-color: #a6b0cf;
@@ -84,5 +87,8 @@ export default {
     --bs-accordion-bg: transparent;
     --bs-theme-mode-icon: "";
     --bs-dropdown-bg: #313a43;
+}
+.true-fire-header span {
+    cursor: pointer;
 }
 </style>

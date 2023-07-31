@@ -1,8 +1,9 @@
 <template>
     <div class="layout-wrapper d-lg-flex">
-        <lessons-list @open-lesson="openLesson" :title="course.title" :lessons="course.lessons" :progress="progress"/>
+        <lessons-list @open-lesson="openLesson" :title="course.title" :lessons="course.lessons" :progress="progress" v-if="isFinite(progress)"/>
         <div class="user-chat w-100 overflow-hidden" ref="lessonContent">
             <div class="d-lg-flex">
+                <true-fire-header/>
                 <div class="w-100 overflow-hidden position-relative" v-if="lesson">
                     <div class="p-3 p-lg-4 border-bottom user-chat-topbar">
                         <div class="row align-items-center">
@@ -56,6 +57,7 @@
 
 <script>
 import LessonsList from '@/components/LessonsList.vue';
+import TrueFireHeader from '@/components/TrueFireHeader.vue';
 import PerfectScrollbar from "perfect-scrollbar";
 import 'perfect-scrollbar/css/perfect-scrollbar.css';
 const LessonStatus = {
@@ -64,7 +66,7 @@ const LessonStatus = {
     finished: 2,
 }
 export default {
-    components: {LessonsList},
+    components: {LessonsList, TrueFireHeader},
     computed: {
         lesson () {
             for (const lesson of this.course.lessons) {
@@ -89,22 +91,18 @@ export default {
         activeLesson: null,
     }),
     async mounted() {
-        const lastLesson = await window.electronAPI.getLastOpenedLesson();
-        if (lastLesson) {
-            await this.openCourse(lastLesson.course_id);
-        }
+        await this.openCourse(+this.$route.query.course);
         window.electronAPI.menuClick((event, id) => {
             this.openCourse(id);
         })
         new PerfectScrollbar(this.$refs.lessonContent);
     },
     methods: {
-        openLesson(lesson) {
-            this.activeLesson = lesson.id
-        },
         async openCourse(id) {
             this.course = await window.electronAPI.getCourse(id);
-            console.log(this.course)
+        },
+        openLesson(lesson) {
+            this.activeLesson = lesson.id
         },
         async changeStatus() {
             let status;
@@ -123,7 +121,7 @@ export default {
         },
         async openFile(file) {
             await window.electronAPI.openFile(file)
-        }
+        },
     }
 }
 </script>
